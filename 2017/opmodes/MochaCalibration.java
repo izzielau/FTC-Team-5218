@@ -10,8 +10,8 @@ public class MochaCalibration {
     public static final double BLUE_PIVOT_MULTIPLIER = 2.7;
     public static final double RED_PIVOT_MULTIPLIER = 2.0;
 
-    public static final double SHOOTER_AUTO_VORTEX = 0.195;
-    public static final double SHOOTER_AUTO_CORNER = 0.4125;
+    public static final double SHOOTER_AUTO_VORTEX = 0.5;
+    public static final double SHOOTER_AUTO_CORNER = 0.425;
 
     public static final double SHOOTER_Y = 0.5;
     public static final double SHOOTER_B = 0.6;
