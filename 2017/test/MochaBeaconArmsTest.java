@@ -74,7 +74,7 @@ public class MochaBeaconArmsTest extends Robot {
 
     @Override
     public void start() {
-        addTask(new ColorSensorTask(this, colorRight, deviceInterfaceModule, false, true, RIGHT_COLOR_PORT) {
+        ColorSensorTask colorSensorTask = new ColorSensorTask(this, colorRight, deviceInterfaceModule, false,  RIGHT_COLOR_PORT) {
             @Override
             public void handleEvent(RobotEvent e) {
                 ColorSensorEvent color = (ColorSensorEvent) e;
@@ -86,6 +86,8 @@ public class MochaBeaconArmsTest extends Robot {
                         break;
                 }
             }
-        });
+        };
+        colorSensorTask.setModeCompare(MochaCalibration.COLOR_THRESHOLD);
+        addTask(colorSensorTask);
     }
 }

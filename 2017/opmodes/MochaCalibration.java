@@ -31,4 +31,6 @@ public class MochaCalibration {
     public static final double BEACON_TICKS_PER_CM = 5.7742;
     public static final double BEACON_STOWED_POSITION = 130/(float)256.0;
 
+    public static final int COLOR_THRESHOLD = 267;
+    public static final int COLOR_READ_DELAY = 700;
 }
