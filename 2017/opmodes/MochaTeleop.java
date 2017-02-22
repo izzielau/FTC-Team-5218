@@ -5,12 +5,8 @@ package opmodes;
  * FTC Team 5218: izzielau, October 30, 2016
  */
 
-import com.qualcomm.ftccommon.Device;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,8 +14,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import team25core.DeadmanMotorTask;
 import team25core.FourWheelDriveTask;
 import team25core.GamepadTask;
-import team25core.LimitSwitchTask;
-import team25core.PersistentTelemetryTask;
 import team25core.Robot;
 import team25core.RobotEvent;
 
@@ -28,8 +22,6 @@ public class MochaTeleop extends Robot {
 
     private final static double SHOOTER_Y = MochaCalibration.SHOOTER_Y;
     private final static double SHOOTER_B = MochaCalibration.SHOOTER_B;
-    private final static double SHOOTER_A= MochaCalibration.SHOOTER_A;
-    private final static double SHOOTER_X = MochaCalibration.SHOOTER_X;
     private final static double BRUSH_SPEED = MochaCalibration.BRUSH_SPEED;
 
     private DcMotor frontLeft;
@@ -41,9 +33,13 @@ public class MochaTeleop extends Robot {
     private DcMotor sbod;
     private DcMotor capball;
     private Servo beacon;
+    private Servo stopper;
+    private Servo ranger;
     private DeviceInterfaceModule interfaceModule;
     private LightSensor one;
     private LightSensor two;
+
+    protected boolean stopperIsStowed;
 
     @Override
     public void init()
@@ -80,9 +76,16 @@ public class MochaTeleop extends Robot {
 
         // Servo.
         beacon = hardwareMap.servo.get("beacon");
-
+        beacon.setPosition(MochaCalibration.BEACON_STOWED_POSITION);
+        stopper = hardwareMap.servo.get("stopper");
+        stopper.setPosition(MochaCalibration.STOPPER_STOW_POSITION);
+        ranger = hardwareMap.servo.get("ranger");
+        ranger.setPosition(MochaCalibration.RANGE_PERPENDICULAR_POSITION);
         // Cap ball.
         capball = hardwareMap.dcMotor.get("capball");
+
+        // Boolean values.
+        stopperIsStowed = true;
     }
 
     @Override
@@ -120,7 +123,7 @@ public class MochaTeleop extends Robot {
         /* DRIVER TWO */
         DeadmanMotorTask capBallUp = new DeadmanMotorTask(this, capball, 1.0, GamepadTask.GamepadNumber.GAMEPAD_2, DeadmanMotorTask.DeadmanButton.LEFT_BUMPER);
         addTask(capBallUp);
-        DeadmanMotorTask capBallDown = new DeadmanMotorTask(this, capball, -1.0, GamepadTask.GamepadNumber.GAMEPAD_2, DeadmanMotorTask.DeadmanButton.LEFT_TRIGGER);
+        DeadmanMotorTask capBallDown = new DeadmanMotorTask(this, capball, -0.5, GamepadTask.GamepadNumber.GAMEPAD_2, DeadmanMotorTask.DeadmanButton.LEFT_TRIGGER);
         addTask(capBallDown);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
@@ -137,6 +140,22 @@ public class MochaTeleop extends Robot {
                 } else if (event.kind == EventKind.BUTTON_A_DOWN) {
                     drive.slowDown(true);
                     drive.slowDown(1.0);
+                }
+            }
+        });
+
+        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
+            public void handleEvent(RobotEvent e) {
+                GamepadEvent event = (GamepadEvent) e;
+
+                if (event.kind == EventKind.BUTTON_A_DOWN) {
+                   if (stopperIsStowed) {
+                       stopperIsStowed = false;
+                       stopper.setPosition(MochaCalibration.STOPPER_STOP_POSITION);
+                   } else if (!stopperIsStowed) {
+                       stopperIsStowed = true;
+                       stopper.setPosition(MochaCalibration.STOPPER_STOW_POSITION);
+                   }
                 }
             }
         });

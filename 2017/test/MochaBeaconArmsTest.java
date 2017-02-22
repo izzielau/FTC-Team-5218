@@ -87,7 +87,7 @@ public class MochaBeaconArmsTest extends Robot {
                 }
             }
         };
-        colorSensorTask.setModeCompare(MochaCalibration.COLOR_THRESHOLD);
+        colorSensorTask.setModeCompare(MochaCalibration.RED_COLOR_THRESHOLD);
         addTask(colorSensorTask);
     }
 }
